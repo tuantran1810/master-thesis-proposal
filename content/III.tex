@@ -1,5 +1,5 @@
 \section{\texorpdfstring{Phương pháp nghiên cứu}{Method}}
-\subsection{\texorpdfstring{Phương pháp đánh giá kết quả nghiên cứu}{Empty}}
+\subsection{\texorpdfstring{Phương pháp đánh giá kết quả nghiên cứu}{Empty}}\label{sec:metrics_eval}
 Do đặc thù của bài toán là tạo sinh ảnh mặt người, việc lựa chọn phương pháp để đánh giá chất lượng và độ chân thật của hình ảnh được tạo ra là một thách thức lớn. Dựa trên các tiêu chí về mặt hình ảnh được đưa ra ở phần \ref{target_label}, đoạn còn lại của phần này sẽ đưa ra các độ đo để đo lường chất lượng hình ảnh của mô hình.
 
 Về chất lượng hình ảnh, hầu hết các nghiên cứu trước đây \cite{chen2018}\cite{chen2019}\cite{vougioukas2019}\cite{vougioukas2020} đều sử dụng \textit{Peak Signal-to-Noise Ratio (PSNR)} và \textit{Structural Similarity Index (SSIM)} như các độ đo để đo lường chất lượng hình ảnh được tạo sinh. Tuy nhiên, PSRN lại không phải là một thông số lý tưởng để đo lường khi nó không quan tâm đến các đặc trưng mặt người trong ảnh. Trong khi đó, SSIM lại là một độ đo tốt hơn khi nó có khả năng đo sự tương đồng về mặt nội dung trong ảnh. SSIM có khả năng so sánh các điểm ảnh và các điểm lân cận của chúng trên ảnh được tạo sinh tương ứng với các điểm trên ảnh thật dựa trên ba tính chất - độ tương phản, độ sáng và cấu trúc. Độ nét cũng là một yếu tố quan trọng nói lên chất lượng ảnh. Độ đo Cummulative Probability Blur Detection được sử dụng trong các nghiên cứu \cite{chen2018}\cite{vougioukas2019}\cite{vougioukas2020}
@@ -26,28 +26,24 @@ Nhằm mục đích dễ dàng cho việc nghiên cứu, đánh giá và so sán
     \centering
     \includegraphics[width=7cm]{./content/images/grid_img.png}
     \caption{Ảnh được cắt từ một video trong tập dữ liệu \textit{GRID}}
-    \label{fig:sample-rapv1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=15cm]{./content/images/crema-d_img.jpg}
     \caption{Ảnh được cắt từ các video trong tập dữ liệu \textit{CREMA-D}}
-    \label{fig:sample-rapv1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=15cm]{./content/images/lrw_img.png}
     \caption{Ảnh được cắt từ các video trong tập dữ liệu \textit{LRW}}
-    \label{fig:sample-rapv1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=15cm]{./content/images/vox_img.png}
     \caption{Ảnh được cắt từ các video trong tập dữ liệu \textit{VoxCeleb}}
-    \label{fig:sample-rapv1}
 \end{figure}
 
 \subsection{\texorpdfstring{Các thí nghiệm dự kiến sẽ triển khai}{Empty}}
