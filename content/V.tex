@@ -73,5 +73,49 @@ Mô hình được huấn luyện và kiểm thử trên các tập dữ liệu 
     \label{fig:chen2018_result}
 \end{figure}
 
+Nghiên cứu này đã đưa ra các phương pháp phù hợp và tiến bộ để trích xuất và kết hợp đặc trưng hình ảnh và âm thanh, đồng thời cũng tận dụng phương pháp GANs để cải thiện chất lượng của ảnh được tạo sinh. Độ hiệu quả của cấu trúc mạng được thể hiện qua kết quả đo lường vượt trội so với các nghiên cứu cùng thời điểm. Tuy nhiên, cấu trúc mạng này có một số yếu điểm. Thứ nhất, mạng chỉ có thể nhận vào hình ảnh tĩnh và một đoạn âm thanh có độ dài xác định (0.64s) và cho ra số khung hình tương ứng với khoảng thời gian đó (16 khung hình). Thứ hai, tác giả vẫn chưa chú ý đến hiện tượng jittering của video được tạo sinh, mạng không có cơ chế để đảm bảo việc chuyển ảnh mượt mà, ít sai khác về độ tương phản, ánh sáng, màu sắc giữa các khung ảnh gần nhau.
+
 %------------------------------------------------------------------------
 
+\subsection{\texorpdfstring{Bài nghiên cứu "End-to-End Speech-Driven Facial Animation with Temporal GANs"\cite{vougioukas2019}}{Target}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{./content/images/vou2019_model.png}
+    \caption{Mô hình của bài nghiên cứu End-to-End Speech-Driven Facial Animation with Temporal GANs}
+    \label{fig:vou2019_model}
+\end{figure}
+
+Nghiên cứu của Vougioukas vào năm 2019 có mục tiêu là tạo ra chuỗi hình ảnh của toàn bộ gương mặt người đang nói với đầu vào là một ảnh tĩnh chứa mặt người bất kỳ và một đoạn tiếng nói bất kỳ. Kiến trúc của mạng được miêu tả trong hình \ref{fig:vou2019_model}, được miêu tả bao gồm ba phần chính. Bộ tạo sinh ảnh Generator nhận vào một đoạn âm thanh tiếng nói có độ dài bất kỳ và một ảnh tĩnh, sử dụng những dữ liệu này như một gợi ý để tạo sinh chuỗi hình ảnh mới với mặt người đang nói tiếng nói tương ứng. Bộ phân biệt ảnh theo khung hình Frame Discriminator cũng nhận vào ảnh tĩnh nói trên, đồng thời nhận thêm một ảnh khác, ảnh này hoặc được tạo sinh từ Generator, hoặc được trích xuất từ video trong bộ dữ liệu. Frame Discriminator sẽ được huấn luyện để phân biệt đâu là ảnh được tạo sinh và đâu là ảnh thật được trích xuất từ video huấn luyện. Bộ phân biệt chuỗi ảnh Sequence Discriminator nhận vào đoạn tiếng nói và một chuỗi hình ảnh trong video. Chuỗi hình ảnh này có thể là hình ảnh được tạo sinh hoặc hình ảnh gốc từ video tương ứng. Bộ Sequence Discriminator sẽ học cách phân biệt hai loại video này trong quá trình huấn luyện. Theo như cơ chế GANs, trong quá trình huấn luyện, hàm mất mát của hai bộ Discriminator sẽ tạo ra lan truyền ngược và cập nhật trọng số của chính nó và của cả Generator. Từ đó, cả ba mạng này đều sẽ dần trở nên chính xác hơn.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \includegraphics[width=7cm]{./content/images/vou2019_gen.png}
+        \caption{Kiến trúc bộ Generator}
+        \label{fig:vou2019_gen}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \includegraphics[width=7cm]{./content/images/vou2019_seq_dis.png}
+        \caption{Kiến trúc bộ Sequence Discriminator}
+        \label{fig:vou2019_seq_dis}
+    \end{minipage}
+\end{figure}
+
+Trong nghiên cứu này, video huấn luyện được tách riêng thành âm thanh và hình ảnh. Mỗi khung hình kích thước $96\times128$ được cắt ra từ video tương ứng với đoạn âm thanh dài 0.16s, đoạn âm thanh này tạo thành một vector 8000 điểm. Như vậy, dữ liệu được tiền xử lý bằng cách cắt nhỏ video thành khung ảnh và đoạn âm thanh tương ứng với ảnh đó (âm thanh có chồng lấn giữa các ảnh).
+
+Kiến trúc của bộ tạo sinh chuỗi ảnh Generator được miêu tả trong hình \ref{fig:vou2019_gen}. Identity Encoder là bộ encoder ảnh có tính năng trích xuất đặc trưng của ảnh tĩnh được đưa vào mạng. Bộ encoder này gồm 6 lớp 2D Convolution, mỗi lớp kết hợp với Batchnorm và ReLU ở phía sau. Mạng này giúp trích xuất ảnh đầu vào thành vector 50 chiều ($z_{id}$). Context Encoder là tổng hợp của hai bộ bao gồm Audio Encoder và một bộ RNN hai lớp. Audio Encoder sẽ trích xuất đặc trưng từ đoạn âm thanh 8000 điểm (vector 8000 chiều) để tạo ra vector 256 chiều. Đặc trưng này được đưa vào bộ RNN để bổ sung ngữ nghĩa về mặt thời gian. Ngõ ra của bộ Context Encoder là trạng thái ẩn (hidden state) của bộ RNN có số chiều bằng 256 ($z_c$). Generator còn có một bộ Noise Generator, thực chất là một mạng GRU có chức năng tạo ra vector nhiễu Gauss 10 chiều ($z_n$). $z_{id}$, ($z_c$) và ($z_n$) được ráp nối với nhau theo kênh tương ứng trước khi đưa vào bộ tạo sinh ảnh. Trong khi $z_{id}$ có chức năng giúp Frame Decoder tái tạo chính xác gương mặt của người nói, $z_c$ sẽ mang thông tin về mặt âm thanh, thời gian và hoàn cảnh, giúp tạo ra gợi ý cho mạng để tạo sinh được hình ảnh tương ứng với âm thanh. Đồng thời, $z_n$ tạo ra tính ngẫu nhiên cho mạng, khi đưa cùng một đầu vào, thì sẽ không khi nào mạng cho ra kết quả giống nhau ở hai lần thử.
+
+Ở đầu ra, bộ sinh ảnh Frame Decoder được sử dụng để tạo sinh chuỗi ảnh theo thời gian. Vector đặc trưng ẩn có 316 chiều, từ vector đặc trưng này, Frame Decoder sẽ tạo ra hình ảnh có kích thước bằng với hình mẫu ban đầu ($96\times128$). Nhằm bảo toàn nhận dạng của người trong ảnh mẫu, Frame Decoder được thiết kế theo kiến trúc U-Net gồm 6 lớp Convolution tương ứng với Identity Encoder. Các lớp Convolution này nhận thêm các đặc trưng ẩn từ lớp tương ứng của Identity Encoder để hạn chế việc đánh mất nhận dạng của mặt người mẫu do bị ảnh hưởng bởi độ sâu cũa mạng. Các đặc trưng ẩn đi qua các lớp Deconvolution và cuối cùng tạo ra ảnh tương ứng với âm thanh.
+
+Bộ phân biệt khung ảnh Frame Discriminator trong hình \ref{fig:vou2019_model} là một mạng Convolution 6 lớp, đầu ra của mạng là xác suất ảnh này được cho là ảnh được tạo sinh. Frame Discriminator giúp cho ảnh tạo sinh từ Generator chân thực hơn, khó phân biệt với ảnh từ video gốc hơn. Bộ phân biệt chuỗi ảnh Sequence Discriminator được miêu tả trong hình \ref{fig:vou2019_seq_dis} có cấu trúc trích xuất đặc trưng tương tự như bộ Generator. Sự khác biệt đến từ bộ trích xuất đặc trưng chuỗi ảnh. Chuỗi hình ảnh được đưa qua bộ Image Encoder để trích xuất đặc trưng ảnh và thu nhỏ số chiều dữ liệu. Các ảnh sau khi qua bộ Image Encoder sẽ được đưa vào mạng RNN hai lớp để cập nhật trạng thái ẩn của mạng RNN. Khi kết thúc chuỗi hình ảnh và âm thanh tương ứng với nó, trạng thái ẩn của hai mạng RNN cho âm thanh và RNN cho hình ảnh được ghép nối tiếp vào nhau theo kênh. Lúc này, đặc trưng âm thanh giúp làm điều kiện để phân biệt chuỗi ảnh tốt hơn. Một bộ Classifier được sử dụng để tính toán xác suất chuỗi ảnh được đưa vào có phải chuỗi được tạo sinh hay không. Bộ Sequence Discriminator giúp cho video tạo ra có sự chân thật trong các chuyển động của khuôn mặt, cũng như sự chân thật trong sự chuyển tiếp giữa các khung hình, nhờ đó tránh được hiện tượng nhảy hình bất thường.
+
+Trong quá trình huấn luyện, các ảnh từ video được cho vào Frame Discriminator ($D_{img}$) bằng cách lấy mẫu với xác suất đều qua hàm $S(x)$ trên chuỗi ảnh $x$. Sequence Discriminator ($D_{seq}$) sẽ phân biệt cả chuỗi ảnh $x$ và âm thanh $a$. Hàm mất mát của GANs được biểu diễn như sau:
+
+\begin{equation}
+    \begin{split}
+    \mathcal{L}_{adv}(D_{img},D_{seq},G) = &\mathrm{E}_{x\sim P_d}[logD_{img}(S(x),x_1)] + \mathrm{E}_{z\sim P_z}[log(1 - D_{img}(S(G(z)), x_1))] + \\
+    &\mathrm{E}_{x\sim P_d}[logD_{seq}(x,a)] + \mathrm{E}_{z\sim P_z}[log(1 - D_{seq}(G(z), a))]
+    \end{split}
+    \label{eqn:vou2019_loss}
+\end{equation}
