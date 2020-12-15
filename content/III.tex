@@ -1,78 +1,55 @@
 \section{\texorpdfstring{Phương pháp nghiên cứu}{Method}}
 \subsection{\texorpdfstring{Phương pháp đánh giá kết quả nghiên cứu}{Empty}}
-Dựa vào từng loại bài toán giải quyết mà có những cách đánh giá khác nhau. Do tính chất của bài toán truy tìm đối tượng dựa vào thuộc tính cho dãy camera quan sát, có tính phân loại đúng sai nhiều nhãn. Tức là khi cho một đầu vào là một tấm hình chứa người đi bộ, model sẽ phân tích và gán nhãn cho tấm hình này có những thuộc tính nào, từ đó hỗ trợ cho việc truy vấn bằng các thuộc tính. Các thuộc tính gán nhãn này có thể đúng hoặc sai. Vì vậy, tác giả sử dụng các thông như sau để đánh giá mô hình.\\
+Do đặc thù của bài toán là tạo sinh ảnh mặt người, việc lựa chọn phương pháp để đánh giá chất lượng và độ chân thật của hình ảnh được tạo ra là một thách thức lớn. Dựa trên các tiêu chí về mặt hình ảnh được đưa ra ở phần \ref{target_label}, đoạn còn lại của phần này sẽ đưa ra các độ đo để đo lường chất lượng hình ảnh của mô hình.
 
-\textit{Mean Accuracy - mA}: Được định nghĩa theo công thức sau 
+Về chất lượng hình ảnh, hầu hết các nghiên cứu trước đây \cite{chen2018}\cite{chen2019}\cite{vougioukas2019}\cite{vougioukas2020} đều sử dụng \textit{Peak Signal-to-Noise Ratio (PSNR)} và \textit{Structural Similarity Index (SSIM)} như các độ đo để đo lường chất lượng hình ảnh được tạo sinh. Tuy nhiên, PSRN lại không phải là một thông số lý tưởng để đo lường khi nó không quan tâm đến các đặc trưng mặt người trong ảnh. Trong khi đó, SSIM lại là một độ đo tốt hơn khi nó có khả năng đo sự tương đồng về mặt nội dung trong ảnh. SSIM có khả năng so sánh các điểm ảnh và các điểm lân cận của chúng trên ảnh được tạo sinh tương ứng với các điểm trên ảnh thật dựa trên ba tính chất - độ tương phản, độ sáng và cấu trúc. Độ nét cũng là một yếu tố quan trọng nói lên chất lượng ảnh. Độ đo Cummulative Probability Blur Detection được sử dụng trong các nghiên cứu \cite{chen2018}\cite{vougioukas2019}\cite{vougioukas2020}
+cũng là một độ đo tốt để đánh giá độ nét của ảnh được tạo sinh.
 
-\begin{equation}
-mA = \frac{1}{2N} \sum_{i=1}^{L} (\frac{TP_i}{P_i} + \frac{TN_i}{N_i})
-\end{equation}
-\indent{}Trong đó:
+Để đánh giá việc duy trì nhận dạng người trong các hình ảnh được tạo sinh, \textit{Cosin Similarity (CSIM)} là độ đo được sử dụng để đo lường sự sai lệch về nhận dạng trong ảnh được tạo sinh và ảnh thật. Độ đo này đo lường khoảng cách giữa hai vector đặc trưng của hai ảnh thật và tạo sinh, từ đó cho ra một con số cụ thể về sự sai khác giữa hai ảnh.
 
-\indent{}\indent{}$N$: số mẫu dự liệu trong tập dữ liệu
+Sự phù hợp của khẩu hình miệng với từ ngữ được nói ra cũng là một yếu tố quyết định đối với chất lượng ảnh được tạo sinh. Hiện tại, các nghiên cứu đã đưa ra các độ đo khác nhau để đánh giá sự phù hợp này. Trong \cite{vougioukas2019}\cite{vougioukas2020}, tác giả sử dụng độ đo \textit{Word Error Rate (WER)}, trong nghiên cứu này, video mặt người sinh ra được đưa vào LipNet - một mô hình mạng học sâu để đọc từ từ khẩu hình miệng, các từ được đọc ra được so sánh với từ gốc và tính ra tỉ lệ sai. Lele Chen \cite{chen2018} đã đưa ra một độ đo khác để đo lường sự phù hợp khẩu hình miệng là \textit{Landmark Distance (LMD)} nhằm đo lường khoảng cách Euclide giữa các điểm cấu thành khẩu hình miệng trong ảnh thật và ảnh được tạo sinh.
 
-\indent{}\indent{}$L$: số thuộc tính trong tập dữ liệu 
-
-\indent{}\indent{}$TP_i$: True Positive của thuộc tính thứ $i$
-
-\indent{}\indent{}$P_i$: Positive của thuộc tính thứ $i$
-
-\indent{}\indent{}$TN_i$: True Negative của thuộc tính thứ $i$
-
-\indent{}\indent{}$N_i$: Negative của thuộc tính thứ $i$\\
-
-\textit{Accuracy - Accu}: Được định nghĩa tỉ lệ mẩu dữ liệu được dự đoán đúng trên tất cả tổng tất cả các mẫu dự liệu được dự đoán. Trong trường hợp lý tưởng, $Accuracy$ càng cao thể hiện model dự đoán càng tốt. Tuy nhiên, có một nhược điểm khi dùng $Accuracy$ trong trường hợp dữ liệu không cân bằng giữa các lớp. Vì thế, $Accuracy$ không phải là độ đo khách quan để đánh giá.\\
-
-\textit{Precision - Prec}: Được định nghĩa là tỉ lệ số điểm true positive trong số những điểm được phân loại là positive
-
-\begin{equation}
-Precision = \frac{TP}{TP + FP}
-\end{equation}
-\indent{}Trong đó:
-
-\indent{}\indent{}$TP$: True Positive
-
-\indent{}\indent{}$FP$: False Positive\\
-
-\textit{Recall}: Được định nghĩa là tỉ lệ số mẫu true positive trong những mẫu số thực sự là positive.
-
-\begin{equation}
-Recall = \frac{TP}{TP + FN}
-\end{equation}
-
-\indent{}Trong đó:
-
-\indent{}\indent{}$TP$: True Positive
-
-\indent{}\indent{}$FP$: False Negative\\
-
-\textit{F1 score - F1}: $F_1$ score là trung bình điều hòa của $Precision$ và $Recall$, có giá trị nằm trong khoảng $(0, 1]$. Vì thế $F_1$ là một thang đo cân bằng, không bị ảnh hưởng bởi mật độ cân bằng từ dữ liệu, cũng như mật độ từ các dữ liệu mất cân bằng. Cũng vì chính lý do này, $F_1$ là một thước đo đáng tin cậy trong mô hình phân lớp.
-
-\begin{equation}
-F_1 = 2 * \frac{Precision * Recall}{Precision + Recall}
-\end{equation}
-
-
+Các độ đo nêu trên là các độ đo đã được kiểm nghiệm tính hiệu quả trong các nghiên cứu gần đây về tạo sinh mặt người dựa vào tiếng nói. Luận văn có thể kế thừa các độ đo này để đánh giá kết quả nghiên cứu, đồng thời có thể dễ dàng so sánh kết quả nghiên cứu của Luận văn với các kết quả nghiên cứu trước đây.
 
 \subsection{\texorpdfstring{Phương pháp thu thập và phân tích số liệu}{Empty}}
-Về mặt dữ liệu, tác giả kế thừa và sử dụng các tập dữ liệu có sẵn và được thử nghiệm trên các mô gần đây. Các tập dữ liệu sau được thử nghiệm trong luận văn này:
+Nhằm mục đích dễ dàng cho việc nghiên cứu, đánh giá và so sánh kết quả với các nghiên cứu trước đây, Luận văn sẽ sử dụng các bộ dữ liệu có sẵn, đã được sử dụng trong các nghiên cứu gần đây có cùng chủ đề. Một số tập dữ liệu sau sẽ được sử dụng trong Luận văn:
 
-\textit{PA-100K}[\ref{refer:1}]: Bao gồm 100000 ảnh người đi bộ có độ phận giải từ 50x100 đến 758x454 được thu thập từ các camera ngoài trời. Tập dữ liệu này có 26 thuộc tính và được chia thành 3 phần: 80000 cho tập huấn luyện, 10000 ảnh cho tập kiểm thử, 10000 ảnh cho tập kiểm tra.
+\textit{GRID}\cite{grid}: Được công bố vào năm 2006, GRID là một tập dữ liệu miễn phí nhằm phục vụ mục đích nghiên cứu. Tập dữ liệu chứa video của 34 người (18 nam, 16 nữ), 1000 video mỗi người, mỗi video có độ dài 3 giây và trong video này, người nói chỉ nói một câu duy nhất.
 
-\textit{PATE}[\ref{refer:2}]: Bao gồm 19000 ảnh người đi bộ có độ phân giải từ 17x39 đến 169x365 được tổng hợp từ 10 nguồn dữ liệu nhỏ sau đó loại bỏ các dữ liệu sai sót và gán nhãn với 61 thuộc tính nhị phân và 4 thuộc tính đa lớp.
+\textit{CREMA-D}\cite{crema-d}: Được công bố vào năm 2014, CREMA-D là một tập dữ liệu được cung cấp miễn phí cho mục đích nghiên cứu. CREMA-D chứa 7,442 video từ 91 diễn viên, gồm 48 nam và 43 nữ, độ tuổi từ 20 đến 74 từ các chủng tộc người khác nhau. Mỗi diễn viên sẽ nói 12 câu khác nhau, với mỗi câu, họ sẽ thể hiện 6 loại cảm xúc khác nhau khi nói (giận dữ, chán ghét, sợ hãi, vui vẻ, bình thường, và buồn) và 4 cấp độ cảm xúc (thấp, trung bình, cao, và không xác định).
 
-\textit{RAPv1}[\ref{refer:3}]: Được thu thập từ nhiều nguồn camera khác nhau để phân tích các thuộc tính của người đi bộ. Gồm 41685 ảnh và đước gán 72 thuộc tính khác nhau.
+\textit{LRW}\cite{lrw}: Là một bộ dữ liệu lớn được thu thập từ kênh truyền hình BBC, LRW chứa đến hơn 1000 giờ video người đang nói, với bộ từ điển hơn 1000 từ vựng, hơn 1 triệu từ đã được nói bởi hơn 1000 người khác nhau.
 
-Tất các các dữ liệu trên đã được tiền xử lý - chọn đúng khung hình người đi bộ và tổ chức và gán nhãn thành các file hoàn chỉnh.
+\textit{VoxCeleb}\cite{vox}: Tập dữ liệu chứa hơn 100000 từ được nói bởi 1251 người nổi tiếng, những video này được cắt ra từ các video được tải lên YouTube. Tập dữ liệu cũng cân bằng về mặt giới tính với 55\% video là nam. Nhân vật trong video đến từ nhiều chủng tộc khác nhau, ngữ điệu khác nhau, ngành nghề và lứa tuổi cũng khác nhau. Video trong tập dữ liệu cũng được thu thập trong nhiều hoàn cảnh khác nhau (trên thảm đỏ, sân vận động, trong phòng thu,...) và tất cả các video đều được ghi bằng các thiết bị cầm tay.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=13cm]{./content/images/sample_rapv1.png}
-    \caption{Một số ảnh trong tập dữ liệu \textit{RAPv1}}
+    \includegraphics[width=7cm]{./content/images/grid_img.png}
+    \caption{Ảnh được cắt từ một video trong tập dữ liệu \textit{GRID}}
+    \label{fig:sample-rapv1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{./content/images/crema-d_img.jpg}
+    \caption{Ảnh được cắt từ các video trong tập dữ liệu \textit{CREMA-D}}
+    \label{fig:sample-rapv1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{./content/images/lrw_img.png}
+    \caption{Ảnh được cắt từ các video trong tập dữ liệu \textit{LRW}}
+    \label{fig:sample-rapv1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{./content/images/vox_img.png}
+    \caption{Ảnh được cắt từ các video trong tập dữ liệu \textit{VoxCeleb}}
     \label{fig:sample-rapv1}
 \end{figure}
 
 \subsection{\texorpdfstring{Các thí nghiệm dự kiến sẽ triển khai}{Empty}}
-Để hình thành ý tưởng và hoàn thành muc tiêu đã đề ra, cần nghiêm túc thực hiện các thí nghiệm liên quan tới các công trình đã được công bố. Một phần để kiểm chứng lại kết quả của công trình, một phần sẽ học tập được cách làm việc với môi trường của bài toán. Các thí nghiệm cần được triển khai:
 
-$1$. Cài đặt và kiểm chứng bài báo của 
+Nhằm mục đích khảo sát, kiểm định và học hỏi, kế thừa các ý tưởng từ các nghiên cứu trước, tác giả sẽ đọc hiểu ý tưởng từ các bài báo từ năm 2018 trở lại đây để nắm rõ lý thuyết và cách vận hành của mô hình được đề ra. Sau đó cài đặt, tiến hành lại các thí nghiệm trên để kiểm chứng và học hỏi thêm kinh nghiệm, đồng thời sẽ cố gắng đề ra những cải tiến cho các mô hình trên nhằm mục đích tăng chất lượng hình ảnh và tính đồng bộ âm thanh cho video được tạo sinh. Từ việc thử nghiệm, cải tiến các mô hình của các nghiên cứu trước, tác giả sẽ thiết kế các mô hình mới và tiến hành thử nghiệm với những cài đặt siêu tham số khác nhau.
